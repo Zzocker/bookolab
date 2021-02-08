@@ -17,5 +17,6 @@ type E interface {
 // Init : create new error
 // we can say like initiating customs error
 func Init(err error, status code.Status, msg string) E {
-	return nil
+	// Implement me 
+	return nil // TODO
 }
