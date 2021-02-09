@@ -64,3 +64,13 @@ type TransactionStore interface {
 	Query(ctx context.Context, sortKey string, query map[string]interface{}, pageNumber int64) ([]model.Transaction, errors.E)
 	DeleteAll(ctx context.Context, username string) errors.E
 }
+
+// OrderStore : port though which transactionCore will interect with transaction database
+type OrderStore interface {
+	Store(ctx context.Context, order model.Order) errors.E
+	Get(ctx context.Context, ordID string) (*model.Order, errors.E)
+	Update(ctx context.Context, order model.Order) errors.E
+	Delete(ctx context.Context, ordID string) errors.E
+	Query(ctx context.Context, sortKey string, query map[string]interface{}, pageNumber int64) ([]model.Order, errors.E)
+	DeleteAll(ctx context.Context, username string) errors.E
+}
