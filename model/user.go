@@ -1,4 +1,4 @@
 package model
 
 // User : 
-type User struct{}
+type User struct{}	
