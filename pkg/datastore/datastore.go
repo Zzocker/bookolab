@@ -18,6 +18,7 @@ type SmartDS interface {
 	Update(ctx context.Context, key, keyValue string, in interface{}) errors.E
 	Delete(ctx context.Context, key, keyValue string) errors.E
 	Query(ctx context.Context, sortingKey string, query map[string]interface{}, pageNumber, perPage int64) ([][]byte, errors.E)
+	DeleteMatching(ctx context.Context, query map[string]interface{}) errors.E
 	CreateIndex(ctx context.Context, key string, unique bool) errors.E
 }
 
