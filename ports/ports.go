@@ -54,3 +54,13 @@ type BookStore interface {
 	Query(ctx context.Context, sortKey string, query map[string]interface{}, pageNumber int64) ([]model.Book, errors.E)
 	DeleteAll(ctx context.Context, username string) errors.E
 }
+
+// TransactionStore : port though which transactionCore will interect with transaction database
+type TransactionStore interface {
+	Store(ctx context.Context, txn model.Transaction) errors.E
+	Get(ctx context.Context, txID string) (*model.Transaction, errors.E)
+	Update(ctx context.Context, txn model.Book) errors.E
+	Delete(ctx context.Context, txID string) errors.E
+	Query(ctx context.Context, sortKey string, query map[string]interface{}, pageNumber int64) ([]model.Transaction, errors.E)
+	DeleteAll(ctx context.Context, username string) errors.E
+}
