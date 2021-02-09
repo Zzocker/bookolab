@@ -23,6 +23,7 @@ type ImageStore interface {
 	Update(ctx context.Context, img model.Image) errors.E
 	Delete(ctx context.Context, imgID string) errors.E
 	Query(ctx context.Context, sortKey string, query map[string]interface{}, pageNumber int64) ([]model.Image, errors.E)
+	DeleteAll(ctx context.Context, username string) errors.E
 }
 
 // CommentStore : port though which imageCore will interect with image database
@@ -32,6 +33,7 @@ type CommentStore interface {
 	Update(ctx context.Context, cmt model.Image) errors.E
 	Delete(ctx context.Context, cmtID string) errors.E
 	Query(ctx context.Context, sortKey string, query map[string]interface{}, pageNumber int64) ([]model.Comment, errors.E)
+	DeleteAll(ctx context.Context, username string) errors.E
 }
 
 // TokenStore : port though which imageCore will interect with image database
