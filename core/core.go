@@ -32,4 +32,38 @@ type UserCore interface {
 	// 6. GetUserWithName : returns userprofiles with matching name patterns
 	// Decending orderer of rating
 	GetUserWithName(ctx context.Context, name string) ([]model.User, errors.E)
+
+	// 7. Comment : to comment on user
+	// username : of user on which is comment is made
+	// comment : content of comment
+	// get username of user making this comment from ctx
+	Comment(ctx context.Context, username string, comment string) errors.E
+
+	// 8. RateAsSeller : rate on user considering that user as seller
+	// username : of rated user
+	// rating : value out of 10
+	// get username of user making this rating from ctx
+	RateAsSeller(ctx context.Context, username string, rating uint) errors.E
+
+	// 9. RateAsBorrower : rate on user considering that user as bollower
+	// username : of rated user
+	// rating : value out of 10
+	// get username of user making this rating from ctx
+	RateAsBorrower(ctx context.Context, username string, rating uint) errors.E
+
+	// 10. UpdateProfile : updates profile of user
+	// f : reader interface to reade image bytevalue
+	// contentType : of image
+	// sizeBytes : size of image in bytes
+	// get owner's username from ctx
+	UpdateProfile(ctx context.Context, f io.Reader, contentType string, sizeBytes int64) errors.E
+
+	// 11. GetUserProfile : return profile image of user
+	// io.Reader : raw bytes reader
+	// string : content-type
+	GetUserProfile(ctx context.Context, username string) (io.Reader, string, errors.E)
+
+	// 12. UpdatePassword : update password of owner's userprofile
+	// get owner's username from ctx 
+	UpdatePassword(ctx context.Context, newPassword string) errors.E
 }
