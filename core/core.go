@@ -149,3 +149,19 @@ type ImageCore interface {
 	// DeleteAll : delete all image which can be identified by given identifier
 	DeleteAll(ctx context.Context, identifier string) errors.E
 }
+
+// CommentCore : core business logic responsible for managing comment
+type CommentCore interface {
+	Create(ctx context.Context, comment model.Comment) errors.E
+	// Get:
+	// commentType : type of comment to get
+	// identifer : to whom this comment is related
+	// eg: commentType : commentOnComment and identifer can id of coment
+	// this will give list of comment made on a comment
+	Get(ctx context.Context, commentType model.CommentType, identifer string) ([]model.Comment, errors.E)
+	Update(ctx context.Context, commentType model.CommentType, identifer string, comment model.Comment) errors.E
+	Delete(ctx context.Context, commentType model.CommentType, identifer string) errors.E
+
+	// DeleteAll : delete all comment which can be identified by given identifier
+	DeleteAll(ctx context.Context, identifer string) errors.E
+}
