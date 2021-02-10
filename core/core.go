@@ -66,6 +66,18 @@ type UserCore interface {
 	// 12. UpdatePassword : update password of owner's userprofile
 	// get owner's username from ctx
 	UpdatePassword(ctx context.Context, newPassword string) errors.E
+
+	// 13. GetAllComment : returns all comment on owners' profile
+	// get owner's username from ctx
+	GetAllComment(ctx context.Context) ([]model.Comment, errors.E)
+
+	// 15. GetAllCurrentBook : returns all currently owned books
+	// get owner's username from ctx
+	GetAllCurrentBook(ctx context.Context) ([]model.Book, errors.E)
+
+	// 16. GetAllOwnedBook : returns all owned books
+	// get owner's username from ctx
+	GetAllOwnedBook(ctx context.Context) ([]model.Book, errors.E)
 }
 
 // BookCore : core business logic responsible for managing book
