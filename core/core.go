@@ -14,7 +14,7 @@ type UserCore interface {
 	Register(ctx context.Context, in UserRegisterInput) errors.E
 
 	// 2. GetUser : return userprofile of user with given username
-	GetUser(ctx context.Context, username string) errors.E
+	GetUser(ctx context.Context, username string) (*model.User, errors.E)
 
 	// 3. UpdateUser : will update userprofile
 	// Get username of owner from ctx
@@ -64,6 +64,57 @@ type UserCore interface {
 	GetUserProfile(ctx context.Context, username string) (io.Reader, string, errors.E)
 
 	// 12. UpdatePassword : update password of owner's userprofile
-	// get owner's username from ctx 
+	// get owner's username from ctx
 	UpdatePassword(ctx context.Context, newPassword string) errors.E
+}
+
+// BookCore : core business logic responsible for managing book
+type BookCore interface {
+
+	// 1. Add will add book to the system
+	// with owner and current owner to user making this request
+	// get username from ctx
+	Add(ctx context.Context, in AddBookInput) errors.E
+
+	// 2. Get will return book with given isbn
+	// isbn : of book
+	Get(ctx context.Context, isbn string) (*model.Book, errors.E)
+
+	// 3. Update: will update book
+	Update(ctx context.Context, book model.Book) errors.E
+
+	// 4. Delete : only owner of the book can delete
+	// get username of owner from ctx
+	Delete(ctx context.Context, isbn string) errors.E
+
+	// 5. DeleteAll will delete all book whose owner and current owner is this user
+	// get username from ctx
+	DeleteAll(ctx context.Context) errors.E
+
+	// 6. Comment will make comment on this book
+	// isbn of book on which comment with content is made
+	// get username of user makeing this comment from ctx
+	Comment(ctx context.Context, isbn string, content string) errors.E
+
+	// 7. Rate will rate book with isbn out of 10
+	// get username of user making this rateing from ctx
+	Rate(ctx context.Context, isbn string, rating uint) errors.E
+
+	// 8. SearchBookByName : returns all book matching a name
+	SearchBookByName(ctx context.Context, name string, pageNumber uint) ([]model.Book, errors.E)
+
+	// 9. SearchBookByAuthor : returns all book by a author
+	SearchBookByAuthor(ctx context.Context, author string, pageNumber uint) ([]model.Book, errors.E)
+
+	// 10. SearchBookByGenere : returns all book with given genere
+	SearchBookByGenere(ctx context.Context, genere []string, pageNumber uint) ([]model.Book, errors.E)
+
+	// 11. GetAllOwned will give all the book owned by a user
+	GetAllOwned(ctx context.Context, username string) ([]model.Book, errors.E)
+
+	// 12. GetAllCurrent will give all the book currently owned by a user
+	GetAllCurrent(ctx context.Context, username string) ([]model.Book, errors.E)
+
+	// 13. GetAllComment returns all comment made on a book
+	GetAllComment(ctx context.Context, isbn string) ([]model.Comment, errors.E)
 }
