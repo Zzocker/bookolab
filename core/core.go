@@ -181,3 +181,7 @@ type TokenCore interface {
 	// internal call when user deactivate their account
 	DeleteAll(ctx context.Context, username string) errors.E
 }
+
+// TODO
+// type order interface{}
+// type transaction interface{}
