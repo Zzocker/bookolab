@@ -130,3 +130,22 @@ type BookCore interface {
 	// 13. GetAllComment returns all comment made on a book
 	GetAllComment(ctx context.Context, isbn string) ([]model.Comment, errors.E)
 }
+
+// ImageCore : core business logic responsible for managing image
+// not not directly called by client
+// to be used by other cores
+type ImageCore interface {
+	// Create : store image to image database
+	Create(ctx context.Context, img model.Image) errors.E
+
+	// Get:
+	// imgType : type of image to get
+	// identifer : to whom this image is related
+	// eg: imgType : profile and identifer can be usernam of a user
+	Get(ctx context.Context, imgType model.ImageType, identifier string) (*model.Image, errors.E)
+	Update(ctx context.Context, imgType model.ImageType, img model.Image) errors.E
+	Delete(ctx context.Context, imgType model.ImageType, identifier string) errors.E
+
+	// DeleteAll : delete all image which can be identified by given identifier
+	DeleteAll(ctx context.Context, identifier string) errors.E
+}
