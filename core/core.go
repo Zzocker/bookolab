@@ -165,3 +165,19 @@ type CommentCore interface {
 	// DeleteAll : delete all comment which can be identified by given identifier
 	DeleteAll(ctx context.Context, identifer string) errors.E
 }
+
+// TokenCore : core business logic responsible for managing comment
+type TokenCore interface {
+	// from username and password
+	CreateRefreshToken(ctx context.Context, password string) (string, errors.E)
+	// from refresh token id
+	CreateAccessToken(ctx context.Context, refreshToken string) (string, errors.E)
+
+	// checks expiry
+	// returns username if accesstoken valid otherwise error
+	CheckAccessToken(ctx context.Context, accessID string) (string, errors.E)
+
+	// will delete all tokens of a user
+	// internal call when user deactivate their account
+	DeleteAll(ctx context.Context, username string) errors.E
+}
