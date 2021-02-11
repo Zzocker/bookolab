@@ -12,11 +12,37 @@ type E interface {
 
 	// Message to be sent to client
 	Message() string
+
+	Error() string
 }
 
 // Init : create new error
 // we can say like initiating customs error
-func Init(err error, status code.Status, msg string) E {
-	// Implement me 
-	return nil // TODO
+func Init(e error, status code.Status, msg string) E {
+	// Implement me
+	return &err{
+		status: status,
+		err:    e,
+		msg:    msg,
+	}
+}
+
+type err struct {
+	status code.Status
+	err    error
+	msg    string
+}
+
+func (e *err) GetStatus() code.Status {
+	return e.status
+}
+func (e *err) InError() error {
+	return e.err
+}
+func (e *err) Message() string {
+	return e.msg
+}
+
+func (e *err) Error() string {
+	return e.err.Error()
 }
