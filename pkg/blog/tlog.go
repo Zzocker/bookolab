@@ -7,6 +7,6 @@ func NewTestLogger() Logger {
 
 type testLogger struct{}
 
-func (t testLogger) Infof(string, ...interface{})
-func (t testLogger) Debugf(string, ...interface{})
-func (t testLogger) Errorf(string, ...interface{})
+func (t testLogger) Infof(string, ...interface{})  {}
+func (t testLogger) Debugf(string, ...interface{}) {}
+func (t testLogger) Errorf(string, ...interface{}) {}
