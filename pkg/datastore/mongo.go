@@ -7,7 +7,9 @@ import (
 
 	"github.com/Zzocker/bookolab/config"
 	"github.com/Zzocker/bookolab/pkg/blog"
+	"github.com/Zzocker/bookolab/pkg/code"
 	"github.com/Zzocker/bookolab/pkg/errors"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -45,23 +47,116 @@ func newMongoDS(ctx context.Context, lg blog.Logger, conf config.DatastoreConf) 
 }
 
 func (m *mongoDS) Store(ctx context.Context, in interface{}) errors.E {
+	m.lg.Debugf("storing %+v in mongodb", in)
+	_, err := m.ds.InsertOne(ctx, in)
+	if isDuplicate(err) {
+		m.lg.Errorf("duplicate key error : %v", err.Error())
+		return errors.Init(err, code.CodeAlreadyExists, "duplicate entry")
+	} else if err != nil {
+		m.lg.Errorf("internal error : %v", err.Error())
+		return errors.Init(err, code.CodeInternal, "internal database error")
+	}
 	return nil
 }
-func (m *mongoDS) Get(ctx context.Context, key, value string) ([]byte, errors.E) {
-	return nil, nil
+func (m *mongoDS) Get(ctx context.Context, filter map[string]interface{}) ([]byte, errors.E) {
+	m.lg.Debugf("get %v", filter)
+	reply := m.ds.FindOne(ctx, filter)
+	if reply.Err() == mongo.ErrNoDocuments {
+		m.lg.Errorf("non document found with filter=%+v", filter)
+		return nil, errors.Init(reply.Err(), code.CodeNotFound, "internal database error")
+	} else if reply.Err() != nil {
+		m.lg.Errorf("internal error : %v", reply.Err())
+		return nil, errors.Init(reply.Err(), code.CodeInternal, "internal database error")
+	}
+	raw, err := reply.DecodeBytes()
+	if err != nil {
+		m.lg.Errorf("internal error : %v", reply.Err())
+		return nil, errors.Init(reply.Err(), code.CodeInternal, "failed to decode database document")
+	}
+	return raw, nil
 }
-func (m *mongoDS) Update(ctx context.Context, key, keyValue string, in interface{}) errors.E {
+func (m *mongoDS) Update(ctx context.Context, filter map[string]interface{}, in interface{}) errors.E {
+	m.lg.Debugf("update filter=%v value", filter, in)
+	reply, err := m.ds.UpdateOne(ctx, filter, bson.M{"$set": in})
+	if err != nil {
+		m.lg.Errorf("internal error : %v", err.Error())
+		return errors.Init(err, code.CodeInternal, "internal database error")
+	}
+	if reply.MatchedCount != 1 {
+		m.lg.Errorf("non document found with filter=%+v", filter)
+		return errors.Init(err, code.CodeNotFound, "document not found")
+
+	}
 	return nil
 }
-func (m *mongoDS) Delete(ctx context.Context, key, keyValue string) errors.E {
+func (m *mongoDS) Delete(ctx context.Context, filter map[string]interface{}) errors.E {
+	m.lg.Debugf("delete %v", filter)
+	reply, err := m.ds.DeleteOne(ctx, filter)
+	if err != nil {
+		m.lg.Errorf("internal error : %v", err.Error())
+		return errors.Init(err, code.CodeInternal, "internal database error")
+	}
+	if reply.DeletedCount != 1 {
+		m.lg.Errorf("non document found with filter=%+v", filter)
+		return errors.Init(err, code.CodeNotFound, "document not found")
+	}
 	return nil
 }
 func (m *mongoDS) Query(ctx context.Context, sortingKey string, query map[string]interface{}, pageNumber, perPage int64) ([][]byte, errors.E) {
-	return nil, nil
+	m.lg.Debugf("query mongo filter=%v pageNumber=%d perPage=%d", query, pageNumber, perPage)
+	skip := (pageNumber - 1) * perPage
+	if skip < 0 {
+		skip = 0
+	}
+	opts := options.FindOptions{
+		Limit: &perPage,
+		Skip:  &skip,
+		Sort:  bson.D{{sortingKey, 1}},
+	}
+	cur, err := m.ds.Find(ctx, query, &opts)
+	if err != nil {
+		m.lg.Errorf("query fail : %v", err)
+		return nil, errors.Init(err, code.CodeInternal, "query fail on mongo")
+	}
+	defer cur.Close(ctx)
+	raws := make([][]byte, 0, cur.RemainingBatchLength())
+	for cur.Next(ctx) {
+		raws = append(raws, cur.Current)
+	}
+	return raws, nil
 }
-func (m *mongoDS) DeleteMatching(ctx context.Context, query map[string]interface{}) errors.E {
+func (m *mongoDS) DeleteMatching(ctx context.Context, filter map[string]interface{}) errors.E {
+	m.lg.Debugf("delete many %v", filter)
+	_, err := m.ds.DeleteMany(ctx, filter)
+	if err != nil {
+		m.lg.Errorf("internal error : %v", err.Error())
+		return errors.Init(err, code.CodeInternal, "internal database error")
+	}
 	return nil
 }
 func (m *mongoDS) CreateIndex(ctx context.Context, key string, unique bool) errors.E {
+	m.lg.Debugf("createing mongo index key=%s isUnique=%v", key, unique)
+	_, err := m.ds.Indexes().CreateOne(ctx, mongo.IndexModel{
+		Keys: bson.D{{key, 1}},
+		Options: &options.IndexOptions{
+			Unique: &unique,
+		},
+	})
+	if err != nil {
+		m.lg.Errorf("failed to create index : %v", err)
+		return errors.Init(err, code.CodeInternal, "failed to create index")
+	}
 	return nil
+}
+
+// helper
+func isDuplicate(err error) bool {
+	if mErr, ok := err.(mongo.WriteException); ok {
+		for _, e := range mErr.WriteErrors {
+			if e.Code == 11000 {
+				return true
+			}
+		}
+	}
+	return false
 }

@@ -14,9 +14,9 @@ import (
 // eg : mongo
 type SmartDS interface {
 	Store(ctx context.Context, in interface{}) errors.E
-	Get(ctx context.Context, key, value string) ([]byte, errors.E)
-	Update(ctx context.Context, key, keyValue string, in interface{}) errors.E
-	Delete(ctx context.Context, key, keyValue string) errors.E
+	Get(ctx context.Context, filter map[string]interface{}) ([]byte, errors.E)
+	Update(ctx context.Context, filter map[string]interface{}, in interface{}) errors.E
+	Delete(ctx context.Context, filter map[string]interface{}) errors.E
 	Query(ctx context.Context, sortingKey string, query map[string]interface{}, pageNumber, perPage int64) ([][]byte, errors.E)
 	DeleteMatching(ctx context.Context, query map[string]interface{}) errors.E
 	CreateIndex(ctx context.Context, key string, unique bool) errors.E

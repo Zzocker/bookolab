@@ -14,6 +14,11 @@ var (
 	ds *mongoDS
 )
 
+func TestMongoType(t *testing.T) {
+	var l interface{} = &mongoDS{}
+	_, ok := l.(SmartDS)
+	assert.True(t, ok)
+}
 func TestNewMongoDS(t *testing.T) {
 	conf := config.DatastoreConf{
 		URL:        "localhost:27017",
