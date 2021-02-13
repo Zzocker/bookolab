@@ -7,6 +7,8 @@ package datastore
 import (
 	"context"
 
+	"github.com/Zzocker/bookolab/config"
+	"github.com/Zzocker/bookolab/pkg/blog"
 	"github.com/Zzocker/bookolab/pkg/errors"
 )
 
@@ -39,12 +41,12 @@ type DumbDS interface {
 
 // NewSmartDS :
 // TODO require datastore config as argument
-func NewSmartDS() errors.E {
-	return nil // TODO
+func NewSmartDS(ctx context.Context, lg blog.Logger, conf config.DatastoreConf) SmartDS {
+	return newMongoDS(ctx, lg, conf) // TODO
 }
 
 // NEwDumbDS :
 // TODO require datastore config as argument
-func NEwDumbDS() errors.E {
-	return nil // TODO
+func NEwDumbDS(ctx context.Context, lg blog.Logger, conf config.DatastoreConf) DumbDS {
+	return newRedisDS(ctx, lg, conf) // TODO
 }
