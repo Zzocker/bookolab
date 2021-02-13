@@ -33,6 +33,7 @@ type DumbDS interface {
 	Get(ctx context.Context, key string) ([]byte, errors.E)
 	// SGet : set get will return all values stored in the store key
 	SGet(ctx context.Context, key string) ([]string, errors.E)
+	// Set can also be deleted using delete
 	Delete(ctx context.Context, key string) errors.E
 }
 
