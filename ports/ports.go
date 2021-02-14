@@ -42,7 +42,7 @@ type TokenStore interface {
 	Get(ctx context.Context, tokenID string) (*model.Token, errors.E)
 	Delete(ctx context.Context, tokeID string) errors.E
 	// DeleteAll : delete all tokens owned by a user
-	DeleteAll(ctx context.Context, userID string) errors.E
+	// DeleteAll(ctx context.Context, userID string) errors.E
 }
 
 // BookStore : port though which bookCore will interect with book database

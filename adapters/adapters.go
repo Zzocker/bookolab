@@ -33,3 +33,10 @@ func NewCommentStore(ctx context.Context, lg blog.Logger, cfg config.DatastoreCo
 		ds: datastore.NewSmartDS(ctx, lg, cfg),
 	}
 }
+
+// NewTokenStore :
+func NewTokenStore(ctx context.Context, lg blog.Logger, cfg config.DatastoreConf) ports.TokenStore {
+	return &tokenStore{
+		ds: datastore.NEwDumbDS(ctx, lg, cfg),
+	}
+}
