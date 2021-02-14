@@ -26,3 +26,10 @@ func NewImageStore(ctx context.Context, lg blog.Logger, cfg config.DatastoreConf
 		ds: datastore.NewSmartDS(ctx, lg, cfg),
 	}
 }
+
+// NewCommentStore :
+func NewCommentStore(ctx context.Context, lg blog.Logger, cfg config.DatastoreConf) ports.CommentStore {
+	return &commentStore{
+		ds: datastore.NewSmartDS(ctx, lg, cfg),
+	}
+}
