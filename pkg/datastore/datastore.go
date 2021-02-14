@@ -18,6 +18,7 @@ type SmartDS interface {
 	Store(ctx context.Context, in interface{}) errors.E
 	Get(ctx context.Context, filter map[string]interface{}) ([]byte, errors.E)
 	Update(ctx context.Context, filter map[string]interface{}, in interface{}) errors.E
+	UpdateMatching(ctx context.Context, query map[string]interface{}, in interface{}) errors.E
 	Delete(ctx context.Context, filter map[string]interface{}) errors.E
 	Query(ctx context.Context, sortingKey string, query map[string]interface{}, pageNumber, perPage int64) ([][]byte, errors.E)
 	DeleteMatching(ctx context.Context, query map[string]interface{}) errors.E

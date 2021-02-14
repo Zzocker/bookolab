@@ -56,3 +56,14 @@ func TestInsertWithCustomID(t *testing.T) {
 	bson.Unmarshal(raw, &out)
 	assert.Equal(t, v, out)
 }
+
+func TestUpdateMatching(t *testing.T) {
+	err := ds.UpdateMatching(context.Background(), map[string]interface{}{
+		"f2": "name",
+	}, map[string]interface{}{
+		"$set": map[string]interface{}{
+			"f2": "new_Name",
+		},
+	})
+	assert.NoError(t, err)
+}

@@ -89,6 +89,17 @@ func (m *mongoDS) Update(ctx context.Context, filter map[string]interface{}, in 
 	}
 	return nil
 }
+
+func (m *mongoDS) UpdateMatching(ctx context.Context, filter map[string]interface{}, in interface{}) errors.E {
+	m.lg.Debugf("update Matching filter=%v value", filter, in)
+	_, err := m.ds.UpdateMany(ctx, filter, in)
+	if err != nil {
+		m.lg.Errorf("internal error : %v", err.Error())
+		return errors.Init(err, code.CodeInternal, "internal database error")
+	}
+	return nil
+}
+
 func (m *mongoDS) Delete(ctx context.Context, filter map[string]interface{}) errors.E {
 	m.lg.Debugf("delete %v", filter)
 	reply, err := m.ds.DeleteOne(ctx, filter)
