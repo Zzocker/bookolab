@@ -8,11 +8,17 @@ type ApplicationConf struct {
 // CoreConfigs represents configuration for each core
 type CoreConfigs struct {
 	User UserCoreConfig `yaml:"user"`
+	Book BookCoreConfig `yaml:"book"`
 }
 
 // UserCoreConfig represents configuration for user core
 type UserCoreConfig struct {
 	UserStore DatastoreConf `yaml:"userstore"`
+}
+
+// BookCoreConfig represents configuration for book core
+type BookCoreConfig struct {
+	BookStore DatastoreConf `yaml:"bookstore"`
 }
 
 // DatastoreConf represents configuration of a datastore (like mongo/redis)
