@@ -56,3 +56,14 @@ func NewTokenStore(ctx context.Context, lg blog.Logger, cfg config.DatastoreConf
 		ds: ds,
 	}, nil
 }
+
+// NewBookStore :
+func NewBookStore(ctx context.Context, lg blog.Logger, cfg config.DatastoreConf) (ports.BookStore, error) {
+	ds, err := datastore.NewSmartDS(ctx, lg, cfg)
+	if err != nil {
+		return nil, err
+	}
+	return &bookStore{
+		ds: ds,
+	}, nil
+}
