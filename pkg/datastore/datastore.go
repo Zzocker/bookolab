@@ -42,12 +42,12 @@ type DumbDS interface {
 
 // NewSmartDS :
 // TODO require datastore config as argument
-func NewSmartDS(ctx context.Context, lg blog.Logger, conf config.DatastoreConf) SmartDS {
+func NewSmartDS(ctx context.Context, lg blog.Logger, conf config.DatastoreConf) (SmartDS, error) {
 	return newMongoDS(ctx, lg, conf) // TODO
 }
 
 // NEwDumbDS :
 // TODO require datastore config as argument
-func NEwDumbDS(ctx context.Context, lg blog.Logger, conf config.DatastoreConf) DumbDS {
+func NEwDumbDS(ctx context.Context, lg blog.Logger, conf config.DatastoreConf) (DumbDS, error) {
 	return newRedisDS(ctx, lg, conf) // TODO
 }

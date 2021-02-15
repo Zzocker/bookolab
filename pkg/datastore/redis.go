@@ -2,7 +2,7 @@ package datastore
 
 import (
 	"context"
-	"os"
+	"fmt"
 	"strconv"
 
 	"github.com/Zzocker/bookolab/config"
@@ -17,12 +17,11 @@ type redisDS struct {
 	lg   blog.Logger
 }
 
-func newRedisDS(ctx context.Context, lg blog.Logger, conf config.DatastoreConf) *redisDS {
+func newRedisDS(ctx context.Context, lg blog.Logger, conf config.DatastoreConf) (*redisDS, error) {
 	lg.Infof("connecting redis database at %s", conf.Username)
 	database, err := strconv.Atoi(conf.Database)
 	if err != nil {
-		lg.Errorf("database should be integer")
-		os.Exit(1)
+		return nil, fmt.Errorf("database should be integer")
 	}
 	pool := redis.Pool{
 		DialContext: func(ctx context.Context) (redis.Conn, error) {
@@ -39,20 +38,18 @@ func newRedisDS(ctx context.Context, lg blog.Logger, conf config.DatastoreConf) 
 	lg.Debugf("create a new connection for ping request")
 	conn, err := pool.GetContext(ctx)
 	if err != nil {
-		lg.Errorf("failed to get connection from pool")
-		os.Exit(1)
+		return nil, fmt.Errorf("failed to get connection from pool")
 	}
 	defer conn.Close()
 	lg.Debugf("making a ping request")
 	if _, err := conn.Do("PING"); err != nil {
-		lg.Errorf("failed to ping %s", conf.URL)
-		os.Exit(1)
+		return nil, fmt.Errorf("failed to ping %s", conf.URL)
 	}
 	lg.Infof("successfully connected to redis")
 	return &redisDS{
 		pool: &pool,
 		lg:   lg,
-	}
+	}, nil
 }
 func (r *redisDS) Store(ctx context.Context, key string, value []byte, expireIn int64) errors.E {
 	r.lg.Debugf("stor key=%s TTL=%d sec", key, expireIn)

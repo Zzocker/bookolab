@@ -3,7 +3,6 @@ package datastore
 import (
 	"context"
 	"fmt"
-	"os"
 
 	"github.com/Zzocker/bookolab/config"
 	"github.com/Zzocker/bookolab/pkg/blog"
@@ -19,31 +18,28 @@ type mongoDS struct {
 	ds *mongo.Collection
 }
 
-func newMongoDS(ctx context.Context, lg blog.Logger, conf config.DatastoreConf) *mongoDS {
+func newMongoDS(ctx context.Context, lg blog.Logger, conf config.DatastoreConf) (*mongoDS, error) {
 	lg.Infof("connecting mongo database : mongodb://_:_@%s/%s/%s", conf.URL, conf.Database, conf.Collection)
 	addrs := fmt.Sprintf("mongodb://%s:%s@%s", conf.Username, conf.Password, conf.URL)
 	lg.Debugf("createing new mongo client")
 	client, err := mongo.NewClient(options.Client().ApplyURI(addrs))
 	if err != nil {
-		lg.Errorf("failed to create new client %+v", err)
-		os.Exit(1)
+		return nil, fmt.Errorf("failed to create new client %+v", err)
 	}
 	lg.Debugf("connecting newly created client")
 	err = client.Connect(ctx)
 	if err != nil {
-		lg.Errorf("failed to connect %+v", err)
-		os.Exit(1)
+		return nil, fmt.Errorf("failed to connect %+v", err)
 	}
 	lg.Debugf("pinging database")
 	if err = client.Ping(ctx, nil); err != nil {
-		lg.Errorf("failed to ping %+v", err)
-		os.Exit(1)
+		return nil, fmt.Errorf("failed to ping %+v", err)
 	}
 	lg.Infof("ping successfully")
 	return &mongoDS{
 		ds: client.Database(conf.Database).Collection(conf.Collection),
 		lg: lg,
-	}
+	}, nil
 }
 
 func (m *mongoDS) Store(ctx context.Context, in interface{}) errors.E {

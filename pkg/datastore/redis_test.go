@@ -21,8 +21,9 @@ func TestNewRedis(t *testing.T) {
 		URL:      "localhost:6379",
 		Database: "5",
 	}
-	ds := newRedisDS(context.TODO(), blog.NewTestLogger(), conf)
+	ds, err := newRedisDS(context.TODO(), blog.NewTestLogger(), conf)
 	assert.NotNil(t, ds)
+	assert.NoError(t, err)
 }
 
 func TestRedisStore(t *testing.T) {
@@ -30,7 +31,7 @@ func TestRedisStore(t *testing.T) {
 		URL:      "localhost:6379",
 		Database: "5",
 	}
-	ds := newRedisDS(context.TODO(), blog.NewTestLogger(), conf)
+	ds, _ := newRedisDS(context.TODO(), blog.NewTestLogger(), conf)
 	assert.NotNil(t, ds)
 	key := "redisStore"
 	err := ds.Store(context.TODO(), key, []byte("pritam"), int64(10*time.Second.Seconds()))
@@ -42,7 +43,7 @@ func TestRedisSStore(t *testing.T) {
 		URL:      "localhost:6379",
 		Database: "5",
 	}
-	ds := newRedisDS(context.TODO(), blog.NewTestLogger(), conf)
+	ds, _ := newRedisDS(context.TODO(), blog.NewTestLogger(), conf)
 	assert.NotNil(t, ds)
 	key := "redisSStore"
 	err := ds.SStore(context.TODO(), key, "token1")
@@ -58,7 +59,7 @@ func TestRedisGet(t *testing.T) {
 		URL:      "localhost:6379",
 		Database: "5",
 	}
-	ds := newRedisDS(context.TODO(), blog.NewTestLogger(), conf)
+	ds, _ := newRedisDS(context.TODO(), blog.NewTestLogger(), conf)
 	assert.NotNil(t, ds)
 	key := "redisGetTest"
 	value := "value"
@@ -74,7 +75,7 @@ func TestRedisSGet(t *testing.T) {
 		URL:      "localhost:6379",
 		Database: "5",
 	}
-	ds := newRedisDS(context.TODO(), blog.NewTestLogger(), conf)
+	ds, _ := newRedisDS(context.TODO(), blog.NewTestLogger(), conf)
 	assert.NotNil(t, ds)
 	key := "redisSGet"
 	values := []string{"token1", "token2", "token3"}
@@ -99,7 +100,7 @@ func TestRedisDelete(t *testing.T) {
 		URL:      "localhost:6379",
 		Database: "5",
 	}
-	ds := newRedisDS(context.TODO(), blog.NewTestLogger(), conf)
+	ds, _ := newRedisDS(context.TODO(), blog.NewTestLogger(), conf)
 	assert.NotNil(t, ds)
 	key := "redisDelete"
 	ds.Store(context.TODO(), key, []byte("any"), -1)

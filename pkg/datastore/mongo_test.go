@@ -31,8 +31,9 @@ func TestNewMongoDS(t *testing.T) {
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	ds = newMongoDS(ctx, blog.NewTestLogger(), conf)
+	ds, err := newMongoDS(ctx, blog.NewTestLogger(), conf)
 	assert.NotNil(t, ds)
+	assert.NoError(t, err)
 }
 
 type testStruct struct {
