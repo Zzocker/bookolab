@@ -1,7 +1,19 @@
 package config
 
 // ApplicationConf represents all the configuration for this application
-type ApplicationConf struct{}
+type ApplicationConf struct {
+	Cores CoreConfigs `yaml:"cores"`
+}
+
+// CoreConfigs represents configuration for each core
+type CoreConfigs struct {
+	User UserCoreConfig `yaml:"user"`
+}
+
+// UserCoreConfig represents configuration for user core
+type UserCoreConfig struct {
+	UserStore DatastoreConf `yaml:"userstore"`
+}
 
 // DatastoreConf represents configuration of a datastore (like mongo/redis)
 type DatastoreConf struct {
