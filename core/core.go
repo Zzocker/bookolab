@@ -179,7 +179,7 @@ type TokenCore interface {
 
 	// will delete all tokens of a user
 	// internal call when user deactivate their account
-	DeleteAll(ctx context.Context, username string) errors.E
+	// DeleteAll(ctx context.Context, username string) errors.E
 }
 
 // TODO

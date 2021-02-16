@@ -17,6 +17,7 @@ var (
 		bookCoreBuilder{},
 		imageCoreBuilder{},
 		commentCoreBuilder{},
+		tokenCoreBuilder{},
 	}
 )
 

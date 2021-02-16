@@ -11,6 +11,7 @@ type CoreConfigs struct {
 	Book    BookCoreConfig  `yaml:"book"`
 	Image   ImageCoreConf   `yaml:"image"`
 	Comment CommentCoreConf `yaml:"comment"`
+	Token   TokenCoreConf   `yaml:"token"`
 }
 
 // UserCoreConfig represents configuration for user core
@@ -31,6 +32,11 @@ type ImageCoreConf struct {
 // CommentCoreConf represents configuration for comment core
 type CommentCoreConf struct {
 	CommentStore DatastoreConf `yaml:"commentstore"`
+}
+
+// TokenCoreConf represents configuration for token core
+type TokenCoreConf struct {
+	TokenStore DatastoreConf `yaml:"tokenstore"`
 }
 
 // DatastoreConf represents configuration of a datastore (like mongo/redis)
