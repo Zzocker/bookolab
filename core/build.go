@@ -14,6 +14,7 @@ type coreBuilder interface {
 var (
 	builderFactory = []coreBuilder{
 		userCoreBuilder{},
+		bookCoreBuilder{},
 	}
 )
 
