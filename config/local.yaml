@@ -1,0 +1,35 @@
+level: -1 # debug
+cores:
+  user:
+    userstore:
+      URL: localhost:27017
+      Username: root
+      Password: password
+      Database: blab
+      Collection: user
+  book:
+    bookstore:
+      URL: localhost:27017
+      Username: root
+      Password: password
+      Database: blab
+      Collection: book
+  image:
+    imagestore:
+      URL: localhost:27017
+      Username: root
+      Password: password
+      Database: blab
+      Collection: image
+  comment:
+    commentstore:
+      URL: localhost:27017
+      Username: root
+      Password: password
+      Database: blab
+      Collection: comment
+  token:
+    tokenstore:
+      URL: localhost:6379
+      Database: 5
+  

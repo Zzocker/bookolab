@@ -18,7 +18,7 @@ type redisDS struct {
 }
 
 func newRedisDS(ctx context.Context, lg blog.Logger, conf config.DatastoreConf) (*redisDS, error) {
-	lg.Infof("connecting redis database at %s", conf.Username)
+	lg.Infof("connecting redis database at %s", conf.URL)
 	database, err := strconv.Atoi(conf.Database)
 	if err != nil {
 		return nil, fmt.Errorf("database should be integer")

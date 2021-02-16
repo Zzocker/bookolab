@@ -1,15 +1,24 @@
 package main
 
-import "github.com/Zzocker/bookolab/pkg/blog"
+import (
+	"flag"
+
+	"github.com/Zzocker/bookolab/config"
+	"github.com/Zzocker/bookolab/pkg/blog"
+	"github.com/Zzocker/bookolab/server"
+)
+
+var (
+	configPath = flag.String("config", "config/local.yaml", "configuration path location")
+)
 
 func main() {
-	l := blog.New(blog.DebugLevel)
-	a := 10
-	l.Debugf("debug called %+v", a)
-	l.Errorf("error called %+v", a)
-	l.Infof("info called %+v", a)
-	blog.NewWithFields(l, map[string]interface{}{
-		"username": "pritam",
-		"age":      "56",
-	}).Infof("calling info with fields")
+	flag.Parse()
+	conf, err := config.Load(*configPath)
+	if err != nil {
+		panic(conf)
+	}
+	lg := blog.New(conf.Level)
+	lg.Infof("configuration loaded from %s", *configPath)
+	server.CreateAndRun(lg, conf)
 }
