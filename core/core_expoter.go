@@ -7,6 +7,7 @@ var (
 	uCore UserCore
 	bCore BookCore
 	iCore ImageCore
+	cCore CommentCore
 )
 
 // GetUserCore will return user core to handlers
@@ -20,4 +21,8 @@ func GetBookCore() BookCore {
 
 func GetImageCore() ImageCore {
 	return iCore
+}
+
+func GetCommentCore() CommentCore {
+	return cCore
 }

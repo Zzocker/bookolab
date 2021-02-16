@@ -7,9 +7,10 @@ type ApplicationConf struct {
 
 // CoreConfigs represents configuration for each core
 type CoreConfigs struct {
-	User  UserCoreConfig `yaml:"user"`
-	Book  BookCoreConfig `yaml:"book"`
-	Image ImageCoreConf  `yaml:"image"`
+	User    UserCoreConfig  `yaml:"user"`
+	Book    BookCoreConfig  `yaml:"book"`
+	Image   ImageCoreConf   `yaml:"image"`
+	Comment CommentCoreConf `yaml:"comment"`
 }
 
 // UserCoreConfig represents configuration for user core
@@ -25,6 +26,11 @@ type BookCoreConfig struct {
 // ImageCoreConf represents configuration for image core
 type ImageCoreConf struct {
 	ImageStore DatastoreConf `yaml:"imagestore"`
+}
+
+// CommentCoreConf represents configuration for comment core
+type CommentCoreConf struct {
+	CommentStore DatastoreConf `yaml:"commentstore"`
 }
 
 // DatastoreConf represents configuration of a datastore (like mongo/redis)

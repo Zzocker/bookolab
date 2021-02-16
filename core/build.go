@@ -15,6 +15,8 @@ var (
 	builderFactory = []coreBuilder{
 		userCoreBuilder{},
 		bookCoreBuilder{},
+		imageCoreBuilder{},
+		commentCoreBuilder{},
 	}
 )
 
