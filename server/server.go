@@ -28,11 +28,12 @@ func CreateAndRun(lg blog.Logger, conf *config.ApplicationConf) {
 	lg.Infof("successfully built all the cores")
 	///////////////////////////////////////////
 	engin := gin.New()
+	engin.Use(gin.Logger())
 	engin.Use(gin.Recovery())
 
 	public := engin.Group("/v1/public")
 	private := engin.Group("/v1/api")
-	err = api.RegisterHandlers(lg, public, private)
+	api.RegisterHandlers(lg, public, private)
 	start(lg, engin, conf.Port)
 }
 
