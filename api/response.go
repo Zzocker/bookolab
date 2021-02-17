@@ -13,7 +13,7 @@ type status struct {
 }
 
 func (r response) send(c *gin.Context) {
-	c.JSON(r.Status.Code, r)
+	c.JSONP(r.Status.Code, r)
 }
 
 func newRes() response {

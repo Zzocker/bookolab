@@ -19,6 +19,10 @@ func NewUserStore(ctx context.Context, lg blog.Logger, cfg config.DatastoreConf)
 	if err != nil {
 		return nil, err
 	}
+	err = ds.CreateIndex(ctx, "details.email_id", true)
+	if err != nil {
+		return nil, err
+	}
 	return &userStore{
 		ds: ds,
 	}, nil

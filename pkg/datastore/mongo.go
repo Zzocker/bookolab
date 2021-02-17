@@ -43,13 +43,10 @@ func newMongoDS(ctx context.Context, lg blog.Logger, conf config.DatastoreConf) 
 }
 
 func (m *mongoDS) Store(ctx context.Context, in interface{}) errors.E {
-	m.lg.Debugf("storing %+v in mongodb", in)
 	_, err := m.ds.InsertOne(ctx, in)
 	if isDuplicate(err) {
-		m.lg.Errorf("duplicate key error : %v", err.Error())
 		return errors.Init(err, code.CodeAlreadyExists, "duplicate entry")
 	} else if err != nil {
-		m.lg.Errorf("internal error : %v", err.Error())
 		return errors.Init(err, code.CodeInternal, "internal database error")
 	}
 	return nil

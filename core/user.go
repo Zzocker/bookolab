@@ -13,8 +13,13 @@ type userCore struct {
 	uStore ports.UserDatastore
 }
 
-func (u *userCore) Register(ctx context.Context, in UserRegisterInput) errors.E {
-	return nil
+func (u *userCore) Register(ctx context.Context, in UserRegisterInput, password string) errors.E {
+	err := in.validate(password)
+	if err != nil {
+		return err
+	}
+	user := in.toUser(password)
+	return u.uStore.Store(ctx, user)
 }
 func (u *userCore) GetUser(ctx context.Context, username string) (*model.User, errors.E) {
 	return nil, nil

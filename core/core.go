@@ -11,7 +11,7 @@ import (
 // UserCore : core business logic responsible for managaing user profile
 type UserCore interface {
 	// 1. Register called by top layer (http,grpc) of this project
-	Register(ctx context.Context, in UserRegisterInput) errors.E
+	Register(ctx context.Context, in UserRegisterInput, password string) errors.E
 
 	// 2. GetUser : return userprofile of user with given username
 	GetUser(ctx context.Context, username string) (*model.User, errors.E)

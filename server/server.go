@@ -28,7 +28,7 @@ func CreateAndRun(lg blog.Logger, conf *config.ApplicationConf) {
 	lg.Infof("successfully built all the cores")
 	///////////////////////////////////////////
 	engin := gin.New()
-	engin.Use(gin.Logger())
+	// engin.Use(gin.Logger())
 	engin.Use(gin.Recovery())
 
 	public := engin.Group("/v1/public")
