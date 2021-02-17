@@ -7,6 +7,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/Zzocker/bookolab/api"
 	"github.com/Zzocker/bookolab/config"
 	"github.com/Zzocker/bookolab/core"
 	"github.com/Zzocker/bookolab/pkg/blog"
@@ -29,6 +30,9 @@ func CreateAndRun(lg blog.Logger, conf *config.ApplicationConf) {
 	engin := gin.New()
 	engin.Use(gin.Recovery())
 
+	public := engin.Group("/v1/public")
+	private := engin.Group("/v1/api")
+	err = api.RegisterHandlers(lg, public, private)
 	start(lg, engin, conf.Port)
 }
 
