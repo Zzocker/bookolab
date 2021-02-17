@@ -1,4 +1,5 @@
 level: -1 # debug
+port: 8080
 cores:
   user:
     userstore:

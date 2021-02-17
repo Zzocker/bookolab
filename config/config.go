@@ -4,6 +4,7 @@ import "github.com/Zzocker/bookolab/pkg/blog"
 
 // ApplicationConf represents all the configuration for this application
 type ApplicationConf struct {
+	Port  int         `yaml:"port"`
 	Level blog.Level  `yaml:"level"`
 	Cores CoreConfigs `yaml:"cores"`
 }
