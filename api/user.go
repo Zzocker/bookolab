@@ -17,6 +17,8 @@ func (userRouterBuilder) register(lg blog.Logger, public, private *gin.RouterGro
 		core: core.GetUserCore(),
 	}
 	public.POST("/user/register", uAPI.register)
+	// now private
+	private.GET("/user/:username", uAPI.getUser)
 }
 
 type userAPI struct {
@@ -53,5 +55,26 @@ func (u *userAPI) register(c *gin.Context) {
 		return
 	}
 	lg.Infof("success")
+	res.send(c)
+}
+
+func (u *userAPI) getUser(c *gin.Context) {
+	username, _ := c.Get("USERNAME")
+	lg := blog.NewWithFields(u.lg, map[string]interface{}{
+		"endpoint": "user/register",
+		"username": username,
+	})
+	lg.Debugf("endpoint call")
+	user, err := u.core.GetUser(c, c.Param("username"))
+	res := newRes()
+	if err != nil {
+		lg.Errorf("failed to user %v", err)
+		res.Status.Code = code.ToHTTP(err.GetStatus())
+		res.Status.Message = err.Message()
+		res.send(c)
+		return
+	}
+	lg.Infof("got user=%s", c.Param("username"))
+	res.Data = user
 	res.send(c)
 }

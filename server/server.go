@@ -10,6 +10,7 @@ import (
 	"github.com/Zzocker/bookolab/api"
 	"github.com/Zzocker/bookolab/config"
 	"github.com/Zzocker/bookolab/core"
+	"github.com/Zzocker/bookolab/middleware"
 	"github.com/Zzocker/bookolab/pkg/blog"
 	"github.com/gin-gonic/gin"
 )
@@ -33,6 +34,7 @@ func CreateAndRun(lg blog.Logger, conf *config.ApplicationConf) {
 
 	public := engin.Group("/v1/public")
 	private := engin.Group("/v1/api")
+	private.Use(middleware.OAuth())
 	api.RegisterHandlers(lg, public, private)
 	start(lg, engin, conf.Port)
 }

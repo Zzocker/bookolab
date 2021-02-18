@@ -24,7 +24,10 @@ func (u *userCore) Register(ctx context.Context, in UserRegisterInput, password 
 	return u.uStore.Store(ctx, user)
 }
 func (u *userCore) GetUser(ctx context.Context, username string) (*model.User, errors.E) {
-	return nil, nil
+	if username == "" {
+		return nil, errors.Init(fmt.Errorf("empty username"), code.CodeInvalidArgument, "empty username")
+	}
+	return u.uStore.Get(ctx, username)
 }
 func (u *userCore) UpdateUser(ctx context.Context, reader io.Reader) errors.E {
 	return nil

@@ -47,5 +47,9 @@ func (t *tokenCore) CreateRefreshToken(ctx context.Context, username, password s
 	return token.ID, nil
 }
 func (t *tokenCore) CheckAccessToken(ctx context.Context, accessID string) (string, errors.E) {
-	return "", nil
+	token, err := t.tStore.Get(ctx, accessID)
+	if err != nil {
+		return "", err
+	}
+	return token.Username, nil
 }

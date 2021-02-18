@@ -16,7 +16,7 @@ func (tokenRouterBuilder) register(lg blog.Logger, public, private *gin.RouterGr
 	}
 
 	public.GET("/token/refresh/create", tAPI.createRefreshToken)
-	private.GET("/token/access/create", tAPI.createAccessToken)
+	public.GET("/token/access/create", tAPI.createAccessToken)
 }
 
 type tokenAPI struct {
