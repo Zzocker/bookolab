@@ -52,18 +52,14 @@ func (m *mongoDS) Store(ctx context.Context, in interface{}) errors.E {
 	return nil
 }
 func (m *mongoDS) Get(ctx context.Context, filter map[string]interface{}) ([]byte, errors.E) {
-	m.lg.Debugf("get %v", filter)
 	reply := m.ds.FindOne(ctx, filter)
 	if reply.Err() == mongo.ErrNoDocuments {
-		m.lg.Errorf("non document found with filter=%+v", filter)
 		return nil, errors.Init(reply.Err(), code.CodeNotFound, "internal database error")
 	} else if reply.Err() != nil {
-		m.lg.Errorf("internal error : %v", reply.Err())
 		return nil, errors.Init(reply.Err(), code.CodeInternal, "internal database error")
 	}
 	raw, err := reply.DecodeBytes()
 	if err != nil {
-		m.lg.Errorf("internal error : %v", reply.Err())
 		return nil, errors.Init(reply.Err(), code.CodeInternal, "failed to decode database document")
 	}
 	return raw, nil

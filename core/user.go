@@ -2,9 +2,11 @@ package core
 
 import (
 	"context"
+	"fmt"
 	"io"
 
 	"github.com/Zzocker/bookolab/model"
+	"github.com/Zzocker/bookolab/pkg/code"
 	"github.com/Zzocker/bookolab/pkg/errors"
 	"github.com/Zzocker/bookolab/ports"
 )
@@ -31,6 +33,13 @@ func (u *userCore) DeleteUser(ctx context.Context) errors.E {
 	return nil
 }
 func (u *userCore) CheckCred(ctx context.Context, username, password string) errors.E {
+	user, err := u.uStore.Get(ctx, username)
+	if err != nil {
+		return err
+	}
+	if user.Password != hash(password) {
+		return errors.Init(fmt.Errorf("invalid password"), code.CodeUnauthorized, "invalid password")
+	}
 	return nil
 }
 func (u *userCore) GetUserWithName(ctx context.Context, name string) ([]model.User, errors.E) {

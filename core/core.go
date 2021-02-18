@@ -169,7 +169,7 @@ type CommentCore interface {
 // TokenCore : core business logic responsible for managing comment
 type TokenCore interface {
 	// from username and password
-	CreateRefreshToken(ctx context.Context, password string) (string, errors.E)
+	CreateRefreshToken(ctx context.Context, username, password string) (string, errors.E)
 	// from refresh token id
 	CreateAccessToken(ctx context.Context, refreshToken string) (string, errors.E)
 

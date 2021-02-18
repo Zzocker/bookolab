@@ -12,6 +12,7 @@ type handlerRegister interface {
 var (
 	registerFactory = []handlerRegister{
 		userRouterBuilder{},
+		tokenRouterBuilder{},
 	}
 )
 

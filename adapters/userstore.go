@@ -26,7 +26,7 @@ func (u *userStore) Get(ctx context.Context, username string) (*model.User, erro
 		return nil, err
 	}
 	var user model.User
-	bson.Unmarshal(raw, user)
+	bson.Unmarshal(raw, &user)
 	return &user, nil
 }
 func (u *userStore) Update(ctx context.Context, user model.User) errors.E {
