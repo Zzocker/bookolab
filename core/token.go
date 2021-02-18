@@ -15,7 +15,19 @@ type tokenCore struct {
 }
 
 func (t *tokenCore) CreateAccessToken(ctx context.Context, refreshToken string) (string, errors.E) {
-	return "", nil
+	if refreshToken == "" {
+		return "", errors.Init(fmt.Errorf("empty refresh token"), code.CodeInvalidArgument, "empty refresh token")
+	}
+	token, err := t.tStore.Get(ctx, refreshToken)
+	if err != nil {
+		return "", err
+	}
+	*token = model.NewAccessToken(id(), token.Username)
+	err = t.tStore.Store(ctx, *token)
+	if err != nil {
+		return "", err
+	}
+	return token.ID, nil
 }
 func (t *tokenCore) CreateRefreshToken(ctx context.Context, username, password string) (string, errors.E) {
 	if username == "" {

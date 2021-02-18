@@ -16,6 +16,7 @@ func (tokenRouterBuilder) register(lg blog.Logger, public, private *gin.RouterGr
 	}
 
 	public.GET("/token/refresh/create", tAPI.createRefreshToken)
+	private.GET("/token/access/create", tAPI.createAccessToken)
 }
 
 type tokenAPI struct {
@@ -45,5 +46,27 @@ func (t *tokenAPI) createRefreshToken(c *gin.Context) {
 	}
 	res.Data = tokenID
 	lg.Infof("refresh token created")
+	res.send(c)
+}
+
+func (t *tokenAPI) createAccessToken(c *gin.Context) {
+	lg := blog.NewWithFields(t.lg, map[string]interface{}{
+		"endpoint": "/token/access/create",
+	})
+	lg.Debugf("endpoint call")
+	res := newRes()
+	lg = blog.NewWithFields(t.lg, map[string]interface{}{
+		"endpoint": "user/register",
+	})
+	tokenID, err := t.core.CreateAccessToken(c, c.GetHeader("Refresh-Token"))
+	if err != nil {
+		lg.Errorf(err.Error())
+		res.Status.Code = code.ToHTTP(err.GetStatus())
+		res.Status.Message = err.Message()
+		res.send(c)
+		return
+	}
+	res.Data = tokenID
+	lg.Infof("access token created")
 	res.send(c)
 }
