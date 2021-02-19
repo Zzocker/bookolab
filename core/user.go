@@ -6,28 +6,48 @@ import (
 	"io"
 
 	"github.com/Zzocker/bookolab/model"
+	"github.com/Zzocker/bookolab/pkg/blog"
 	"github.com/Zzocker/bookolab/pkg/code"
 	"github.com/Zzocker/bookolab/pkg/errors"
+	"github.com/Zzocker/bookolab/pkg/util"
 	"github.com/Zzocker/bookolab/ports"
 )
 
 type userCore struct {
 	uStore ports.UserDatastore
+	lg     blog.Logger
 }
 
 func (u *userCore) Register(ctx context.Context, in UserRegisterInput, password string) errors.E {
+	lg := util.LoggerFromCtx(ctx, u.lg)
+	lg.Debugf("validating user register request")
 	err := in.validate(password)
 	if err != nil {
+		lg.Errorf("failed to validate user register request : %v", err.Error())
 		return err
 	}
 	user := in.toUser(password)
-	return u.uStore.Store(ctx, user)
+	lg.Debugf("storing registered user")
+	err = u.uStore.Store(ctx, user)
+	if err != nil {
+		lg.Errorf("failed to store user : %v", err.Error())
+		return err
+	}
+	return nil
 }
 func (u *userCore) GetUser(ctx context.Context, username string) (*model.User, errors.E) {
+	lg := util.LoggerFromCtx(ctx, u.lg)
 	if username == "" {
+		lg.Errorf("empty username")
 		return nil, errors.Init(fmt.Errorf("empty username"), code.CodeInvalidArgument, "empty username")
 	}
-	return u.uStore.Get(ctx, username)
+	lg.Debugf("getting user %s from user datastore", username)
+	user, err := u.uStore.Get(ctx, username)
+	if err != nil {
+		lg.Errorf("failed to get user : %v", err.Error())
+		return nil, err
+	}
+	return user, nil
 }
 func (u *userCore) UpdateUser(ctx context.Context, reader io.Reader) errors.E {
 	return nil

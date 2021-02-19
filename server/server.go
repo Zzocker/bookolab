@@ -31,10 +31,10 @@ func CreateAndRun(lg blog.Logger, conf *config.ApplicationConf) {
 	engin := gin.New()
 	// engin.Use(gin.Logger())
 	engin.Use(gin.Recovery())
-
+	engin.Use(middleware.Access(lg))
 	public := engin.Group("/v1/public")
 	private := engin.Group("/v1/api")
-	private.Use(middleware.OAuth(lg))
+	private.Use(middleware.OAuth())
 	api.RegisterHandlers(lg, public, private)
 	start(lg, engin, conf.Port)
 }

@@ -25,48 +25,27 @@ type tokenAPI struct {
 }
 
 func (t *tokenAPI) createRefreshToken(c *gin.Context) {
-	lg := blog.NewWithFields(t.lg, map[string]interface{}{
-		"endpoint": "/token/refresh/create",
-	})
-	lg.Debugf("endpoint call")
 	res := newRes()
-	username := c.GetHeader("username")
-	password := c.GetHeader("secret")
-	lg = blog.NewWithFields(t.lg, map[string]interface{}{
-		"username": username,
-		"endpoint": "user/register",
-	})
-	tokenID, err := t.core.CreateRefreshToken(c, username, password)
+	tokenID, err := t.core.CreateRefreshToken(c.Request.Context(), c.GetHeader("username"), c.GetHeader("secret"))
 	if err != nil {
-		lg.Errorf(err.Error())
 		res.Status.Code = code.ToHTTP(err.GetStatus())
 		res.Status.Message = err.Message()
 		res.send(c)
 		return
 	}
 	res.Data = tokenID
-	lg.Infof("refresh token created")
 	res.send(c)
 }
 
 func (t *tokenAPI) createAccessToken(c *gin.Context) {
-	lg := blog.NewWithFields(t.lg, map[string]interface{}{
-		"endpoint": "/token/access/create",
-	})
-	lg.Debugf("endpoint call")
 	res := newRes()
-	lg = blog.NewWithFields(t.lg, map[string]interface{}{
-		"endpoint": "user/register",
-	})
 	tokenID, err := t.core.CreateAccessToken(c, c.GetHeader("Refresh-Token"))
 	if err != nil {
-		lg.Errorf(err.Error())
 		res.Status.Code = code.ToHTTP(err.GetStatus())
 		res.Status.Message = err.Message()
 		res.send(c)
 		return
 	}
 	res.Data = tokenID
-	lg.Infof("access token created")
 	res.send(c)
 }

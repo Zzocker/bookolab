@@ -8,14 +8,13 @@ import (
 	"github.com/Zzocker/bookolab/pkg/blog"
 	"github.com/Zzocker/bookolab/pkg/code"
 	"github.com/Zzocker/bookolab/pkg/errors"
-	"github.com/Zzocker/bookolab/pkg/util"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type mongoDS struct {
-	lg blog.Logger
+	lg blog.Logger // TODO no need
 	ds *mongo.Collection
 }
 
@@ -53,64 +52,48 @@ func (m *mongoDS) Store(ctx context.Context, in interface{}) errors.E {
 	return nil
 }
 func (m *mongoDS) Get(ctx context.Context, filter map[string]interface{}) ([]byte, errors.E) {
-	lg := util.LoggerFromCtx(ctx, m.lg)
-	lg.Debugf("getting %v from smartDS", filter)
 	reply := m.ds.FindOne(ctx, filter)
 	if reply.Err() == mongo.ErrNoDocuments {
-		lg.Errorf("%v", reply.Err())
 		return nil, errors.Init(reply.Err(), code.CodeNotFound, "internal database error")
 	} else if reply.Err() != nil {
-		lg.Errorf("%v", reply.Err())
 		return nil, errors.Init(reply.Err(), code.CodeInternal, "internal database error")
 	}
 	raw, err := reply.DecodeBytes()
 	if err != nil {
-		lg.Errorf("fail to decode database document %v", err)
 		return nil, errors.Init(reply.Err(), code.CodeInternal, "failed to decode database document")
 	}
-	lg.Debugf("got %v from smartDS", filter)
 	return raw, nil
 }
 func (m *mongoDS) Update(ctx context.Context, filter map[string]interface{}, in interface{}) errors.E {
-	m.lg.Debugf("update filter=%v value", filter, in)
 	reply, err := m.ds.UpdateOne(ctx, filter, bson.M{"$set": in})
 	if err != nil {
-		m.lg.Errorf("internal error : %v", err.Error())
 		return errors.Init(err, code.CodeInternal, "internal database error")
 	}
 	if reply.MatchedCount != 1 {
-		m.lg.Errorf("non document found with filter=%+v", filter)
 		return errors.Init(err, code.CodeNotFound, "document not found")
-
 	}
 	return nil
 }
 
 func (m *mongoDS) UpdateMatching(ctx context.Context, filter map[string]interface{}, in interface{}) errors.E {
-	m.lg.Debugf("update Matching filter=%v value", filter, in)
 	_, err := m.ds.UpdateMany(ctx, filter, in)
 	if err != nil {
-		m.lg.Errorf("internal error : %v", err.Error())
 		return errors.Init(err, code.CodeInternal, "internal database error")
 	}
 	return nil
 }
 
 func (m *mongoDS) Delete(ctx context.Context, filter map[string]interface{}) errors.E {
-	m.lg.Debugf("delete %v", filter)
 	reply, err := m.ds.DeleteOne(ctx, filter)
 	if err != nil {
-		m.lg.Errorf("internal error : %v", err.Error())
 		return errors.Init(err, code.CodeInternal, "internal database error")
 	}
 	if reply.DeletedCount != 1 {
-		m.lg.Errorf("non document found with filter=%+v", filter)
 		return errors.Init(err, code.CodeNotFound, "document not found")
 	}
 	return nil
 }
 func (m *mongoDS) Query(ctx context.Context, sortingKey string, query map[string]interface{}, pageNumber, perPage int64) ([][]byte, errors.E) {
-	m.lg.Debugf("query mongo filter=%v pageNumber=%d perPage=%d", query, pageNumber, perPage)
 	skip := (pageNumber - 1) * perPage
 	if skip < 0 {
 		skip = 0
@@ -133,7 +116,6 @@ func (m *mongoDS) Query(ctx context.Context, sortingKey string, query map[string
 	return raws, nil
 }
 func (m *mongoDS) DeleteMatching(ctx context.Context, filter map[string]interface{}) errors.E {
-	m.lg.Debugf("delete many %v", filter)
 	_, err := m.ds.DeleteMany(ctx, filter)
 	if err != nil {
 		m.lg.Errorf("internal error : %v", err.Error())
@@ -142,7 +124,6 @@ func (m *mongoDS) DeleteMatching(ctx context.Context, filter map[string]interfac
 	return nil
 }
 func (m *mongoDS) CreateIndex(ctx context.Context, key string, unique bool) errors.E {
-	m.lg.Debugf("createing mongo index key=%s isUnique=%v", key, unique)
 	_, err := m.ds.Indexes().CreateOne(ctx, mongo.IndexModel{
 		Keys: bson.D{{key, 1}},
 		Options: &options.IndexOptions{
@@ -150,7 +131,6 @@ func (m *mongoDS) CreateIndex(ctx context.Context, key string, unique bool) erro
 		},
 	})
 	if err != nil {
-		m.lg.Errorf("failed to create index : %v", err)
 		return errors.Init(err, code.CodeInternal, "failed to create index")
 	}
 	return nil

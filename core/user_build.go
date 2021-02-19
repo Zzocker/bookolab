@@ -18,6 +18,7 @@ func (userCoreBuilder) build(ctx context.Context, lg blog.Logger, conf config.Ap
 	}
 	uCore = &userCore{
 		uStore: uStore,
+		lg:     lg,
 	}
 	return nil
 }

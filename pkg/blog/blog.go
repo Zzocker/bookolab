@@ -37,7 +37,7 @@ func New(lvl Level) Logger {
 	}
 	l.SetFormatter(&logrus.TextFormatter{
 		DisableTimestamp: true,
-		PadLevelText: true,
+		PadLevelText:     true,
 	})
 	l.SetLevel(level)
 	return &logger{l}

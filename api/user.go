@@ -27,34 +27,22 @@ type userAPI struct {
 }
 
 func (u *userAPI) register(c *gin.Context) {
-	lg := blog.NewWithFields(u.lg, map[string]interface{}{
-		"endpoint": "user/register",
-	})
-	lg.Debugf("endpoint call")
 	res := newRes()
-	secret := c.GetHeader("secret")
 	var input core.UserRegisterInput
 	jErr := c.ShouldBindJSON(&input)
 	if jErr != nil {
-		lg.Errorf("invalid json request : %v", jErr)
 		res.Status.Code = http.StatusBadRequest
 		res.Status.Message = "invalid json request"
 		res.send(c)
 		return
 	}
-	lg = blog.NewWithFields(u.lg, map[string]interface{}{
-		"username": input.Username,
-		"endpoint": "user/register",
-	})
-	err := u.core.Register(c, input, secret)
+	err := u.core.Register(c.Request.Context(), input, c.GetHeader("secret"))
 	if err != nil {
-		lg.Errorf("failed to register : %v", err.Error())
 		res.Status.Code = code.ToHTTP(err.GetStatus())
 		res.Status.Message = err.Message()
 		res.send(c)
 		return
 	}
-	lg.Infof("success")
 	res.send(c)
 }
 

@@ -18,6 +18,7 @@ func (tokenCoreBuilder) build(ctx context.Context, lg blog.Logger, conf config.A
 	}
 	tCore = &tokenCore{
 		tStore: tStore,
+		lg:     lg,
 	}
 	return nil
 }
