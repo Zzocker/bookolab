@@ -8,6 +8,7 @@ import (
 	"github.com/Zzocker/bookolab/pkg/blog"
 	"github.com/Zzocker/bookolab/pkg/code"
 	"github.com/Zzocker/bookolab/pkg/errors"
+	"github.com/Zzocker/bookolab/pkg/util"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -52,16 +53,22 @@ func (m *mongoDS) Store(ctx context.Context, in interface{}) errors.E {
 	return nil
 }
 func (m *mongoDS) Get(ctx context.Context, filter map[string]interface{}) ([]byte, errors.E) {
+	lg := util.LoggerFromCtx(ctx, m.lg)
+	lg.Debugf("getting %v from smartDS", filter)
 	reply := m.ds.FindOne(ctx, filter)
 	if reply.Err() == mongo.ErrNoDocuments {
+		lg.Errorf("%v", reply.Err())
 		return nil, errors.Init(reply.Err(), code.CodeNotFound, "internal database error")
 	} else if reply.Err() != nil {
+		lg.Errorf("%v", reply.Err())
 		return nil, errors.Init(reply.Err(), code.CodeInternal, "internal database error")
 	}
 	raw, err := reply.DecodeBytes()
 	if err != nil {
+		lg.Errorf("fail to decode database document %v", err)
 		return nil, errors.Init(reply.Err(), code.CodeInternal, "failed to decode database document")
 	}
+	lg.Debugf("got %v from smartDS", filter)
 	return raw, nil
 }
 func (m *mongoDS) Update(ctx context.Context, filter map[string]interface{}, in interface{}) errors.E {

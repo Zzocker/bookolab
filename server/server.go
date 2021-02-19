@@ -34,7 +34,7 @@ func CreateAndRun(lg blog.Logger, conf *config.ApplicationConf) {
 
 	public := engin.Group("/v1/public")
 	private := engin.Group("/v1/api")
-	private.Use(middleware.OAuth())
+	private.Use(middleware.OAuth(lg))
 	api.RegisterHandlers(lg, public, private)
 	start(lg, engin, conf.Port)
 }

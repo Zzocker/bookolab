@@ -59,22 +59,14 @@ func (u *userAPI) register(c *gin.Context) {
 }
 
 func (u *userAPI) getUser(c *gin.Context) {
-	username, _ := c.Get("USERNAME")
-	lg := blog.NewWithFields(u.lg, map[string]interface{}{
-		"endpoint": "user/register",
-		"username": username,
-	})
-	lg.Debugf("endpoint call")
-	user, err := u.core.GetUser(c, c.Param("username"))
+	user, err := u.core.GetUser(c.Request.Context(), c.Param("username"))
 	res := newRes()
 	if err != nil {
-		lg.Errorf("failed to user %v", err)
 		res.Status.Code = code.ToHTTP(err.GetStatus())
 		res.Status.Message = err.Message()
 		res.send(c)
 		return
 	}
-	lg.Infof("got user=%s", c.Param("username"))
 	res.Data = user
 	res.send(c)
 }

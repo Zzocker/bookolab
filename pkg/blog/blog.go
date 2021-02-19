@@ -35,6 +35,10 @@ func New(lvl Level) Logger {
 	} else {
 		level = logrus.InfoLevel
 	}
+	l.SetFormatter(&logrus.TextFormatter{
+		DisableTimestamp: true,
+		PadLevelText: true,
+	})
 	l.SetLevel(level)
 	return &logger{l}
 }
