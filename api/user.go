@@ -19,6 +19,7 @@ func (userRouterBuilder) register(lg blog.Logger, public, private *gin.RouterGro
 	public.POST("/user/register", uAPI.register)
 	// now private
 	private.GET("/user/:username", uAPI.getUser)
+	private.PATCH("/user/profile", uAPI.update)
 }
 
 type userAPI struct {
@@ -56,5 +57,18 @@ func (u *userAPI) getUser(c *gin.Context) {
 		return
 	}
 	res.Data = user
+	res.send(c)
+}
+
+func (u *userAPI) update(c *gin.Context) {
+	defer c.Request.Body.Close()
+	err := u.core.UpdateUser(c.Request.Context(), c.Request.Body)
+	res := newRes()
+	if err != nil {
+		res.Status.Code = code.ToHTTP(err.GetStatus())
+		res.Status.Message = err.Message()
+		res.send(c)
+		return
+	}
 	res.send(c)
 }

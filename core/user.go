@@ -2,6 +2,7 @@ package core
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 
@@ -50,6 +51,25 @@ func (u *userCore) GetUser(ctx context.Context, username string) (*model.User, e
 	return user, nil
 }
 func (u *userCore) UpdateUser(ctx context.Context, reader io.Reader) errors.E {
+	lg := util.LoggerFromCtx(ctx, u.lg)
+	username := unWrapUsername(ctx)
+	lg.Debugf("getting older version of userprofile")
+	user, err := u.uStore.Get(ctx, username)
+	if err != nil {
+		lg.Errorf("failed to get older version of userprofile : %v", err.Error())
+		return err
+	}
+	lg.Debugf("updating userprofile")
+	jErr := json.NewDecoder(reader).Decode(user)
+	if jErr != nil {
+		lg.Debugf("failed to update : %v", jErr)
+	}
+	lg.Debugf("storing updated userprofile")
+	err = u.uStore.Update(ctx, *user)
+	if err != nil {
+		lg.Errorf("failed to store updated profile : %v", err.Error())
+		return err
+	}
 	return nil
 }
 func (u *userCore) DeleteUser(ctx context.Context) errors.E {

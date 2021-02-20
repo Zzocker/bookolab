@@ -15,11 +15,11 @@ func OAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		username, err := core.GetTokenCore().CheckAccessToken(c, c.GetHeader("Authorization"))
 		if err != nil {
-			c.Status(http.StatusUnauthorized)
-		} else {
-			c.Set("USERNAME", username)
-			c.Next()
+			c.AbortWithStatus(http.StatusUnauthorized)
+			return
 		}
+		c.Request = c.Request.WithContext(wrapUsername(c.Request.Context(), username))
+		c.Next()
 	}
 }
 
