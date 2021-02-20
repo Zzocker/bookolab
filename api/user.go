@@ -20,6 +20,7 @@ func (userRouterBuilder) register(lg blog.Logger, public, private *gin.RouterGro
 	// now private
 	private.GET("/user/:username", uAPI.getUser)
 	private.PATCH("/user/profile", uAPI.update)
+	private.DELETE("/user/profile", uAPI.delete)
 }
 
 type userAPI struct {
@@ -63,6 +64,18 @@ func (u *userAPI) getUser(c *gin.Context) {
 func (u *userAPI) update(c *gin.Context) {
 	defer c.Request.Body.Close()
 	err := u.core.UpdateUser(c.Request.Context(), c.Request.Body)
+	res := newRes()
+	if err != nil {
+		res.Status.Code = code.ToHTTP(err.GetStatus())
+		res.Status.Message = err.Message()
+		res.send(c)
+		return
+	}
+	res.send(c)
+}
+
+func (u *userAPI) delete(c *gin.Context) {
+	err := u.core.DeleteUser(c.Request.Context())
 	res := newRes()
 	if err != nil {
 		res.Status.Code = code.ToHTTP(err.GetStatus())

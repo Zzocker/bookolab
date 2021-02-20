@@ -73,6 +73,16 @@ func (u *userCore) UpdateUser(ctx context.Context, reader io.Reader) errors.E {
 	return nil
 }
 func (u *userCore) DeleteUser(ctx context.Context) errors.E {
+	lg := util.LoggerFromCtx(ctx, u.lg)
+	// TODO
+	// firstly check can we delete this profile
+	// check if this user has a book for which is not a owner
+	lg.Debugf("deleteing userprofile from userstore")
+	err := u.uStore.Delete(ctx, unWrapUsername(ctx))
+	if err != nil {
+		lg.Errorf("failed to delete userprofile %v", err)
+		return err
+	}
 	return nil
 }
 func (u *userCore) CheckCred(ctx context.Context, username, password string) errors.E {
