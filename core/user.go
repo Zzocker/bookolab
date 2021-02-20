@@ -95,8 +95,23 @@ func (u *userCore) CheckCred(ctx context.Context, username, password string) err
 	}
 	return nil
 }
-func (u *userCore) GetUserWithName(ctx context.Context, name string) ([]model.User, errors.E) {
-	return nil, nil
+func (u *userCore) GetUserWithName(ctx context.Context, name string, pageNumber int64) ([]model.User, errors.E) {
+	lg := util.LoggerFromCtx(ctx, u.lg)
+	if pageNumber < 1 {
+		pageNumber = 1
+	}
+	lg.Debugf("getting user with name=%s for pageNumber=%d", name, pageNumber)
+	users, err := u.uStore.Query(ctx, "created_on", map[string]interface{}{
+		"details.name": map[string]interface{}{
+			"$regex":   fmt.Sprintf("%s*", name),
+			"$options": "i",
+		},
+	}, pageNumber)
+	if err != nil {
+		lg.Errorf("%v", err.Error())
+		return nil, err
+	}
+	return users, nil
 }
 func (u *userCore) Comment(ctx context.Context, username string, comment string) errors.E {
 	return nil

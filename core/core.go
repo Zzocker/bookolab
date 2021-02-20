@@ -31,7 +31,7 @@ type UserCore interface {
 
 	// 6. GetUserWithName : returns userprofiles with matching name patterns
 	// Decending orderer of rating
-	GetUserWithName(ctx context.Context, name string) ([]model.User, errors.E)
+	GetUserWithName(ctx context.Context, name string, pageNumber int64) ([]model.User, errors.E)
 
 	// 7. Comment : to comment on user
 	// username : of user on which is comment is made

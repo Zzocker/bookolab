@@ -2,6 +2,7 @@ package api
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/Zzocker/bookolab/core"
 	"github.com/Zzocker/bookolab/pkg/blog"
@@ -21,6 +22,8 @@ func (userRouterBuilder) register(lg blog.Logger, public, private *gin.RouterGro
 	private.GET("/user/:username", uAPI.getUser)
 	private.PATCH("/user/profile", uAPI.update)
 	private.DELETE("/user/profile", uAPI.delete)
+
+	private.GET("/users", uAPI.getWithName)
 }
 
 type userAPI struct {
@@ -83,5 +86,22 @@ func (u *userAPI) delete(c *gin.Context) {
 		res.send(c)
 		return
 	}
+	res.send(c)
+}
+
+func (u *userAPI) getWithName(c *gin.Context) {
+	pageNumber, sErr := strconv.Atoi(c.Query("page"))
+	if sErr != nil {
+		pageNumber = 1
+	}
+	users, err := u.core.GetUserWithName(c.Request.Context(), c.Query("name"), int64(pageNumber))
+	res := newRes()
+	if err != nil {
+		res.Status.Code = code.ToHTTP(err.GetStatus())
+		res.Status.Message = err.Message()
+		res.send(c)
+		return
+	}
+	res.Data = users
 	res.send(c)
 }
