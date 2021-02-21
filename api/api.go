@@ -13,6 +13,7 @@ var (
 	registerFactory = []handlerRegister{
 		userRouterBuilder{},
 		tokenRouterBuilder{},
+		commentRouterBuilder{},
 	}
 )
 

@@ -114,6 +114,21 @@ func (u *userCore) GetUserWithName(ctx context.Context, name string, pageNumber 
 	return users, nil
 }
 func (u *userCore) Comment(ctx context.Context, username string, comment string) errors.E {
+	lg := util.LoggerFromCtx(ctx, u.lg)
+	lg.Debugf("checking if user=%s exists", username)
+	_, err := u.uStore.Get(ctx, username)
+	if err != nil {
+		lg.Debugf("user %s doesn't exists %v", err.Error())
+		return err
+	}
+	lg.Debugf("create a new comment on user=%s", username)
+	cmt := model.NewComment(unWrapUsername(ctx), username, model.CommentTypeOnUser, comment)
+	lg.Debugf("storing new created comment")
+	err = GetCommentCore().Create(ctx, cmt)
+	if err != nil {
+		lg.Errorf("failed to store comment : %v", err.Error())
+		return err
+	}
 	return nil
 }
 func (u *userCore) RateAsSeller(ctx context.Context, username string, rating uint) errors.E {

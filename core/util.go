@@ -13,6 +13,7 @@ func hash(s string) string {
 	return hex.EncodeToString(md5.New().Sum([]byte(s)))
 }
 
+// TODO move this to util pkg
 func id() string {
 	return primitive.NewObjectID().Hex()
 }

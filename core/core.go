@@ -158,7 +158,7 @@ type CommentCore interface {
 	// identifer : to whom this comment is related
 	// eg: commentType : commentOnComment and identifer can id of coment
 	// this will give list of comment made on a comment
-	Get(ctx context.Context, commentType model.CommentType, identifer string) ([]model.Comment, errors.E)
+	Get(ctx context.Context, commentType model.CommentType, identifer string, pageNumber int64) ([]model.Comment, errors.E)
 	Update(ctx context.Context, commentType model.CommentType, identifer string, comment model.Comment) errors.E
 	Delete(ctx context.Context, commentType model.CommentType, identifer string) errors.E
 

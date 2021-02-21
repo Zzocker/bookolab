@@ -18,6 +18,7 @@ func (commentCoreBuilder) build(ctx context.Context, lg blog.Logger, conf config
 	}
 	cCore = &commentCore{
 		cStore: cStore,
+		lg:     lg,
 	}
 	return nil
 }
