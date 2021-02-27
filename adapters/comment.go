@@ -27,7 +27,7 @@ func (c *commentStore) Get(ctx context.Context, cmtID string) (*model.Comment, e
 	bson.Unmarshal(raw, &comment)
 	return &comment, nil
 }
-func (c *commentStore) Update(ctx context.Context, cmt model.Image) errors.E {
+func (c *commentStore) Update(ctx context.Context, cmt model.Comment) errors.E {
 	return c.ds.Update(ctx, map[string]interface{}{
 		"_id": cmt.ID,
 	}, cmt)

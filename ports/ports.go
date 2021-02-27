@@ -30,7 +30,7 @@ type ImageStore interface {
 type CommentStore interface {
 	Store(ctx context.Context, cmt model.Comment) errors.E
 	Get(ctx context.Context, cmtID string) (*model.Comment, errors.E)
-	Update(ctx context.Context, cmt model.Image) errors.E
+	Update(ctx context.Context, cmt model.Comment) errors.E
 	Delete(ctx context.Context, cmtID string) errors.E
 	Query(ctx context.Context, sortKey string, query map[string]interface{}, pageNumber int64) ([]model.Comment, errors.E)
 	DeleteAll(ctx context.Context, username string) errors.E // made by will be changed to bhuta

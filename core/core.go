@@ -33,12 +33,6 @@ type UserCore interface {
 	// Decending orderer of rating
 	GetUserWithName(ctx context.Context, name string, pageNumber int64) ([]model.User, errors.E)
 
-	// 7. Comment : to comment on user
-	// username : of user on which is comment is made
-	// comment : content of comment
-	// get username of user making this comment from ctx
-	Comment(ctx context.Context, username string, comment string) errors.E
-
 	// 8. RateAsSeller : rate on user considering that user as seller
 	// username : of rated user
 	// rating : value out of 10
@@ -103,11 +97,6 @@ type BookCore interface {
 	// get username from ctx
 	DeleteAll(ctx context.Context) errors.E
 
-	// 6. Comment will make comment on this book
-	// isbn of book on which comment with content is made
-	// get username of user makeing this comment from ctx
-	Comment(ctx context.Context, isbn string, content string) errors.E
-
 	// 7. Rate will rate book with isbn out of 10
 	// get username of user making this rateing from ctx
 	Rate(ctx context.Context, isbn string, rating uint) errors.E
@@ -152,18 +141,17 @@ type ImageCore interface {
 
 // CommentCore : core business logic responsible for managing comment
 type CommentCore interface {
-	Create(ctx context.Context, comment model.Comment) errors.E
-	// Get:
-	// commentType : type of comment to get
-	// identifer : to whom this comment is related
-	// eg: commentType : commentOnComment and identifer can id of coment
-	// this will give list of comment made on a comment
-	Get(ctx context.Context, commentType model.CommentType, identifer string, pageNumber int64) ([]model.Comment, errors.E)
-	Update(ctx context.Context, commentType model.CommentType, identifer string, comment model.Comment) errors.E
-	Delete(ctx context.Context, commentType model.CommentType, identifer string) errors.E
+	CommentOnUser(ctx context.Context, cmt CreateCommentInput) errors.E
+	CommentOnBook(ctx context.Context, cmt CreateCommentInput) errors.E
+	CommentOnComment(ctx context.Context, cmt CreateCommentInput) errors.E
 
-	// DeleteAll : delete all comment which can be identified by given identifier
-	DeleteAll(ctx context.Context, identifer string) errors.E
+	GetComment(ctx context.Context, cmtID string) (*model.Comment, errors.E)
+	UpdateComment(ctx context.Context, cmtID string, updateCmt UpdateCommentInput) errors.E
+	DeleteComment(ctx context.Context, cmtID string) errors.E
+
+	GetUserComment(ctx context.Context, username string) ([]model.Comment, errors.E)
+	GetBookComment(ctx context.Context, bookID string) ([]model.Comment, errors.E)
+	GetCommentComment(ctx context.Context, bookID string) ([]model.Comment, errors.E)
 }
 
 // TokenCore : core business logic responsible for managing comment
