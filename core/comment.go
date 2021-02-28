@@ -43,6 +43,24 @@ func (c *commentCore) CommentOnBook(ctx context.Context, cmt CreateCommentInput)
 	return nil
 }
 func (c *commentCore) CommentOnComment(ctx context.Context, cmt CreateCommentInput) errors.E {
+	lg := util.LoggerFromCtx(ctx, c.lg)
+	lg.Debugf("validating comment request")
+	if cmt.Comment == "" {
+		lg.Errorf("invalid comment request : empty comment")
+		return errors.Init(fmt.Errorf("cannot create a empty comment"), code.CodeInvalidArgument, "cannot create a empty comment")
+	}
+	_, err := c.cStore.Get(ctx, cmt.CommentOn)
+	if err != nil {
+		lg.Errorf("comment doesn't exists")
+		return errors.Init(fmt.Errorf("comment doesn't exists"), code.CodeNotFound, "comment doesn't exists")
+	}
+	comment := model.NewComment(unWrapUsername(ctx), cmt.CommentOn, model.CommentTypeOnComment, cmt.Comment)
+	lg.Debugf("saving the newly created comment")
+	err = c.cStore.Store(ctx, comment)
+	if err != nil {
+		lg.Errorf("failed to store comment : %v", err.Error())
+		return err
+	}
 	return nil
 }
 func (c *commentCore) GetComment(ctx context.Context, cmtID string) (*model.Comment, errors.E) {
@@ -96,13 +114,31 @@ func (c *commentCore) DeleteComment(ctx context.Context, cmtID string) errors.E 
 	return nil
 }
 func (c *commentCore) GetUserComment(ctx context.Context, username string) ([]model.Comment, errors.E) {
-	return nil, nil
+	lg := util.LoggerFromCtx(ctx, c.lg)
+	lg.Debugf("getting all the comments for user=%s", username)
+	comment, err := c.cStore.Query(ctx, "create_at", map[string]interface{}{
+		"comment_made_on": username,
+	}, 1)
+	if err != nil {
+		lg.Errorf("failed to get all the comments %v", err.Error())
+		return nil, err
+	}
+	return comment, nil
 }
 func (c *commentCore) GetBookComment(ctx context.Context, bookID string) ([]model.Comment, errors.E) {
 	return nil, nil
 }
-func (c *commentCore) GetCommentComment(ctx context.Context, bookID string) ([]model.Comment, errors.E) {
-	return nil, nil
+func (c *commentCore) GetCommentComment(ctx context.Context, cmtID string) ([]model.Comment, errors.E) {
+	lg := util.LoggerFromCtx(ctx, c.lg)
+	lg.Debugf("getting all the comments for comment=%s", cmtID)
+	comment, err := c.cStore.Query(ctx, "create_at", map[string]interface{}{
+		"comment_made_on": cmtID,
+	}, 1)
+	if err != nil {
+		lg.Errorf("failed to get all the comments %v", err.Error())
+		return nil, err
+	}
+	return comment, nil
 }
 
 func (c *commentCore) create(ctx context.Context, comment model.Comment) errors.E {

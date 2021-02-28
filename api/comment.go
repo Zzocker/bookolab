@@ -17,9 +17,14 @@ func (commentRouterBuilder) register(lg blog.Logger, public, private *gin.Router
 	}
 
 	private.POST("/comment/on/user", cmt.commentOnUser)
+	private.POST("/comment/on/comment", cmt.commentOnComment)
+
 	private.GET("/comment/get/:id", cmt.getAComment)
 	private.POST("/comment/update/:id", cmt.updateComment)
 	private.DELETE("/comment/:id", cmt.deleteComment)
+
+	private.GET("/comments/user/:id", cmt.getAllCommentOnUser)
+	private.GET("/comments/comment/:id", cmt.getAllCommentsOnComment)
 }
 
 type commentAPI struct {
@@ -88,5 +93,51 @@ func (ct commentAPI) deleteComment(c *gin.Context) {
 		res.send(c)
 		return
 	}
+	res.send(c)
+}
+
+func (ct commentAPI) getAllCommentOnUser(c *gin.Context) {
+	res := newRes()
+	comments, err := ct.core.GetUserComment(c.Request.Context(), c.Param("id"))
+	if err != nil {
+		res.Status.Code = code.ToHTTP(err.GetStatus())
+		res.Status.Message = err.Message()
+		res.send(c)
+		return
+	}
+	res.Data = comments
+	res.send(c)
+}
+
+func (ct commentAPI) commentOnComment(c *gin.Context) {
+	var comment core.CreateCommentInput
+	jErr := c.ShouldBindJSON(&comment)
+	res := newRes()
+	if jErr != nil {
+		res.Status.Code = http.StatusBadRequest
+		res.Status.Message = "invalid json request"
+		res.send(c)
+		return
+	}
+	err := ct.core.CommentOnComment(c.Request.Context(), comment)
+	if err != nil {
+		res.Status.Code = code.ToHTTP(err.GetStatus())
+		res.Status.Message = err.Message()
+		res.send(c)
+		return
+	}
+	res.send(c)
+}
+
+func (ct commentAPI) getAllCommentsOnComment(c *gin.Context) {
+	res := newRes()
+	comments, err := ct.core.GetCommentComment(c.Request.Context(), c.Param("id"))
+	if err != nil {
+		res.Status.Code = code.ToHTTP(err.GetStatus())
+		res.Status.Message = err.Message()
+		res.send(c)
+		return
+	}
+	res.Data = comments
 	res.send(c)
 }
